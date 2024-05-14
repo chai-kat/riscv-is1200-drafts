@@ -1,0 +1,7 @@
+void* malloc() {
+
+}
+
+void free() {
+
+}

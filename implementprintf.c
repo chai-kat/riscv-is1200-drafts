@@ -3,9 +3,9 @@
 
 #include <stdarg.h>
 // #include <stdio.h>
+typedef unsigned long size_t;
 
 extern int putchar(char c);
-typedef unsigned long size_t;
 
 // using geeksforgeeks.org/implement-itoa/, they use a helper reverse function
 void reverse(char* str, int length) {
@@ -29,6 +29,12 @@ void* memcpy(void* to, void* from, size_t count) {
     return to;
 }
 
+void *memset(void *str, int c, size_t n) {
+    for (int i = 0; i < n; i++) {
+        ((char*) str)[i] = (char) c;
+    }
+}
+
 int strlen(char* str) {
     int count = 0;
     while (*str) {
@@ -37,6 +43,17 @@ int strlen(char* str) {
     }
     return count;
 
+}
+
+int strcmp (const char* str1, const char* str2) {
+    while (*str1 && *str2) {
+        if (*str1 != *str2) {
+            return *str1 - *str2;
+        }
+        str1++;
+        str2++;
+    }
+    return *str1 - *str2;
 }
 
 char* strcpy(char* to, char* from) {
@@ -77,11 +94,6 @@ char* itoa_sgnd(int num, char* buffer, int base) {
         num = num / base;
     }
 
-    // // if number is negative, append '-'
-    // if (isNegative) {
-    //     buffer[i++] = '-';
-    // }
-
     buffer[i] = '\0'; // null terminate string
 
     // reverse the string
@@ -92,6 +104,31 @@ char* itoa_sgnd(int num, char* buffer, int base) {
 }
 
 char* itoa_unsgnd(unsigned int num, char* buffer, int base) {
+    int i = 0;
+
+    // handle 0 explicitly, otherwise empty string is printed
+    if (num == 0) {
+        buffer[i++] = '0';
+        buffer[i] = '\0';
+        return buffer;
+    }
+
+    // process individual digits
+    while (num != 0) {
+        int rem = num % base;
+        buffer[i++] = (rem > 9) ? (rem - 10) + 'a' : rem + '0';
+        num = num / base;
+    }
+
+    buffer[i] = '\0'; // null terminate string
+
+    // reverse the string
+    reverse(buffer, i);
+
+    return buffer;
+}
+
+char* itoa_unsgnd_long(unsigned long int num, char* buffer, long int base) {
     int i = 0;
 
     // handle 0 explicitly, otherwise empty string is printed
@@ -141,6 +178,28 @@ char* ftoa(float num, char* buffer, int afterpoint) {
     strcpy(buffer + i, fractionString);
 
     return buffer;
+}
+
+unsigned int abs(int num) {
+    return (num < 0)? -num : num;
+}
+
+#define RAND_MAX 2147483648 // this is 2^31
+int seed = 0;
+
+// write a simple LCG random number generator
+void srand(int s) {
+    seed = s;
+}
+
+int rand() {
+    // chosen values from Table 4, Pierre L’Ecuyer, doi:10.1090/S0025-5718-99-00996-5
+    static const long a = 20501397L;  // chosen to maximize M_32, according to Table 4
+    static const long c = 11; // chosen to be odd, according to Table 4
+    static const long m = RAND_MAX;
+    seed = (a * seed + c) % m;
+
+    return (unsigned int)(seed >> (16)) % RAND_MAX;
 }
 
 int test_printf(char *fstring, ...) {
@@ -343,7 +402,6 @@ int test_printf(char *fstring, ...) {
                     b++;
                     counter++;
                 }
-
             }
 
             // handle %e, print a floating point number in scientific notation
@@ -357,7 +415,6 @@ int test_printf(char *fstring, ...) {
             }
 
             // won't handle %g, %A
-
 
             // handle %c, print a character
             else if (*fstring == 'c') {
@@ -379,7 +436,20 @@ int test_printf(char *fstring, ...) {
 
             // handle %p, print a pointer address
             else if (*fstring == 'p') {
+                // TODO: add code to print out '0x' if # flag given
 
+                void *num = va_arg(ap, void*);
+                // log_16(2 ^ 64) = 16, so 21 characters is always enough for the buffer (incl. '\0')
+                char buffer[21];
+                char* b = itoa_unsgnd_long((unsigned long int) num, buffer, 16L);
+
+                // we use *b in place of buffer,
+                // (arrays are not modifiable lvalues in C, but pointers are)
+                while (*b) {
+                    putchar(*b);
+                    b++;
+                    counter++;
+                }
             }
 
             // handle %n, nothing printed
@@ -408,10 +478,3 @@ int test_printf(char *fstring, ...) {
     va_end(ap);
     return counter;
 }
-
-
-void* self_malloc() {
-    return 0;
-}
-
-void free() {}
