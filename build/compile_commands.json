@@ -1,8 +1,0 @@
-[
-{
-  "directory": "/Users/chaitanya/riscv-is1200-drafts/build",
-  "command": "/usr/bin/clang -g -std=gnu11 -arch arm64 -mmacosx-version-min=14.0 -o CMakeFiles/riscv_is1200_drafts.dir/main.c.o -c /Users/chaitanya/riscv-is1200-drafts/main.c",
-  "file": "/Users/chaitanya/riscv-is1200-drafts/main.c",
-  "output": "CMakeFiles/riscv_is1200_drafts.dir/main.c.o"
-}
-]

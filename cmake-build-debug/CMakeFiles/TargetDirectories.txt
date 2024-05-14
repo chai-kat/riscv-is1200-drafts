@@ -1,3 +1,0 @@
-/Users/chaitanya/riscv-is1200-drafts/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/Users/chaitanya/riscv-is1200-drafts/cmake-build-debug/CMakeFiles/edit_cache.dir
-/Users/chaitanya/riscv-is1200-drafts/cmake-build-debug/CMakeFiles/riscv_is1200_drafts.dir
